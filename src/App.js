@@ -19,29 +19,13 @@ function App() {
     - You end the story with a positive message and a good night wish.`;
     var userMessage = "The childs name is " + name + ".";
 
-    let apiKey;
-    if (process.env.NODE_ENV === 'production') {
-      // Get API key from Azure Key Vault
-      const response = await fetch('https://bedtimestory-kv.vault.azure.net/secrets/OPENAI-API-KEY/c1c0eba57de24986886034ede2d67167', {
-  
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to retrieve API key from Azure Key Vault');
-      }
-  
-      const { value } = await response.json();
-      apiKey = value;
-    } else {
-      // Get API key from environment variable
-      apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-    }
+ 
   
     const response = await fetch(OPENAI_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'api-key': apiKey
+        'api-key': process.env.REACT_APP_OPENAI_API_KEY
       },
       body: JSON.stringify({
         "messages": [
