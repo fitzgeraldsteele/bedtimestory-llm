@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './styles.css';
 
 const OPENAI_ENDPOINT = 'https://fsj-openai-test.openai.azure.com/openai/deployments/fisteele-gpt35-turbo/chat/completions?api-version=2023-03-15-preview';
@@ -6,6 +6,28 @@ const OPENAI_ENDPOINT = 'https://fsj-openai-test.openai.azure.com/openai/deploym
 function App() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
+  const [apiKey, setApiKey] = useState('');
+
+  useEffect(() => {
+    async function fetchApiKey() {
+      if (process.env.NODE_ENV === 'production') {
+        // Get API key from Azure Key Vault
+        const response = await fetch('https://bedtimestory-kv.vault.azure.net/secrets/OPENAI-API-KEY/c1c0eba57de24986886034ede2d67167', {
+        });
+    
+        if (!response.ok) {
+          throw new Error('Failed to retrieve API key from Azure Key Vault');
+        }
+    
+        const { value } = await response.json();
+        setApiKey(value);
+      } else {
+        // Get API key from environment variable
+        setApiKey(process.env.REACT_APP_OPENAI_API_KEY);
+      }
+    }
+    fetchApiKey();
+  }, []);
 
   async function callOpenAIEndpoint(name) {
     const systemMessage = `- You are a chatbot that can generate personalized bedtime stories for toddlers.
@@ -19,13 +41,12 @@ function App() {
     - You end the story with a positive message and a good night wish.`;
     var userMessage = "The childs name is " + name + ".";
 
- 
   
     const response = await fetch(OPENAI_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'api-key': process.env.REACT_APP_OPENAI_API_KEY
+        'api-key': apiKey
       },
       body: JSON.stringify({
         "messages": [
