@@ -22,7 +22,7 @@ function App() {
     let apiKey;
     if (process.env.NODE_ENV === 'production') {
       // Get API key from Azure Key Vault
-      const response = await fetch('https://bedtimestory-kv.vault.azure.net/secrets/OPENAI-API-KEY?api-version=7.2', {
+      const response = await fetch('https://bedtimestory-kv.vault.azure.net/secrets/OPENAI-API-KEY/c1c0eba57de24986886034ede2d67167', {
   
       });
   
